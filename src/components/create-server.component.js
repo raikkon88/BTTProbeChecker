@@ -54,13 +54,6 @@ export default class CreateServer extends Component {
   onSubmit(e) {
     e.preventDefault();
     
-    console.log(`Form submitted:`);
-    console.log(`Todo Description: ${this.state.server_name}`);
-    console.log(`Todo Description: ${this.state.server_url}`);
-    console.log(`Todo Responsible: ${this.state.server_user}`);
-    console.log(`Todo Priority: ${this.state.server_port}`);
-    console.log(`Todo Priority: ${this.state.server_password}`);
-    
     const newServer = {
       server_name: this.state.server_name,
       server_url: this.state.server_url,
@@ -85,7 +78,7 @@ export default class CreateServer extends Component {
   render() {
       return (
         <div style={{marginTop: 10}}>
-          <h3>Create New Todo</h3>
+          <h3>Create New Server</h3>
           <form onSubmit={this.onSubmit}>
               <div className="form-group"> 
                   <label>Server Name: </label>
@@ -93,6 +86,7 @@ export default class CreateServer extends Component {
                           className="form-control"
                           value={this.state.server_name}
                           onChange={this.onChangeServerName}
+                          required
                           />
               </div>
               <div className="form-group">
@@ -102,6 +96,7 @@ export default class CreateServer extends Component {
                           className="form-control"
                           value={this.state.server_url}
                           onChange={this.onChangeServerUrl}
+                          required
                           />
               </div>
               <div className="form-group">
@@ -111,6 +106,7 @@ export default class CreateServer extends Component {
                           className="form-control"
                           value={this.state.server_user}
                           onChange={this.onChangeServerUser}
+                          required
                           />
               </div>
               <div className="form-group">
@@ -120,6 +116,7 @@ export default class CreateServer extends Component {
                           className="form-control"
                           value={this.state.server_password}
                           onChange={this.onChangeServerPassword}
+                          required
                           />
               </div>
               <div className="form-group">
@@ -129,10 +126,11 @@ export default class CreateServer extends Component {
                           className="form-control"
                           value={this.state.server_port}
                           onChange={this.onChangeServerPort}
+                          required
                           />
               </div>
               <div className="form-group">
-                  <input type="submit" value="Create Todo" className="btn btn-primary" />
+                  <input type="submit" value="Create Server" className="btn btn-primary" />
               </div>
           </form>
       </div>

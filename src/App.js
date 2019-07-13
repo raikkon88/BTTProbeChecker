@@ -7,6 +7,7 @@ import { BrowserRouter as Router, Route, Link } from "react-router-dom";
 import CreateServer from "./components/create-server.component";
 import EditServer from "./components/edit-server.component";
 import ServerList from "./components/server-list.component";
+import Index from "./components/index.component";
 
 function App() {
   return (
@@ -29,6 +30,7 @@ function App() {
             </div>
           </nav>
           <br/>
+          <Route path="/" exact component={Index} />
           <Route path="/server" exact component={ServerList} />
           <Route path="/server/edit/:id" component={EditServer} />
           <Route path="/server/create" component={CreateServer} />

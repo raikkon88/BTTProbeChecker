@@ -95,6 +95,7 @@ export default class EditServer extends Component {
                                 className="form-control"
                                 value={this.state.server_name}
                                 onChange={this.onChangeServerName}
+                                required
                                 />
                     </div>
                     <div className="form-group">
@@ -104,6 +105,7 @@ export default class EditServer extends Component {
                                 className="form-control"
                                 value={this.state.server_url}
                                 onChange={this.onChangeServerUrl}
+                                required
                                 />
                     </div>
                     <div className="form-group">
@@ -113,6 +115,7 @@ export default class EditServer extends Component {
                                 className="form-control"
                                 value={this.state.server_user}
                                 onChange={this.onChangeServerUser}
+                                required
                                 />
                     </div>
                     <div className="form-group">
@@ -122,6 +125,7 @@ export default class EditServer extends Component {
                                 className="form-control"
                                 value={this.state.server_password}
                                 onChange={this.onChangeServerPassword}
+                                required
                                 />
                     </div>
                     <div className="form-group">
@@ -131,13 +135,14 @@ export default class EditServer extends Component {
                                 className="form-control"
                                 value={this.state.server_port}
                                 onChange={this.onChangeServerPort}
+                                required
                                 />
                     </div>
 
                     <br />
 
                     <div className="form-group">
-                        <input type="submit" value="Update Todo" className="btn btn-primary" />
+                        <input type="submit" value="Update Server" className="btn btn-primary" />
                     </div>
                 </form>
             </div>
