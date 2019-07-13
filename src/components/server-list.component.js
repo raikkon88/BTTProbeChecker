@@ -10,7 +10,7 @@ const Server = props => (
         <td>{props.server.server_password}</td>
         <td>{props.server.server_port}</td>
         <td>
-            <Link to={"/edit/"+props.server._id}>Edit</Link>
+            <Link to={"/server/edit/"+props.server._id}>Edit</Link>
         </td>
     </tr>
 )
