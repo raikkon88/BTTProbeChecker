@@ -7,6 +7,7 @@ const mongoose = require('mongoose');
 const serverRoutes = express.Router();
 
 let Server = require('./models/server.model');
+let Probe = require('./models/probe.model');
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -17,9 +18,6 @@ const connection = mongoose.connection;
 connection.once('open', function() {
   console.log("MongoDB database connection established successfully");
 })
-
-
-
 
 serverRoutes.route('/').get(function(req, res) {
   Server.find(function(err, servers) {
@@ -33,7 +31,7 @@ serverRoutes.route('/').get(function(req, res) {
 
 serverRoutes.route('/:id').get(function(req, res) {
   let id = req.params.id;
-  Server.findById(id, function(err, server) {
+  Server.findById(id).populate('server_probes').exec(function(err, server) {
       res.json(server);
   });
 });
@@ -47,6 +45,35 @@ serverRoutes.route('/add').post(function(req, res) {
       .catch(err => {
           res.status(400).send('adding new server failed');
       });
+});
+
+serverRoutes.route('/:id/add').post(function(req, res) {
+  
+  let probe = new Probe(req.body);
+  Server.findById(probe.probe_server, function (err, server){
+    probe.save().then(probe => {
+      console.log(server);
+      server.server_probes.push(probe);
+      server.save().then(server => {
+        res.status(200).json({'probe': 'probe added successfully'});
+      })
+      .catch(err => {
+        res.status(400).send('adding new probe failed');
+      });
+    })
+    .catch(err => {
+      res.status(400).send('adding new probe failed');
+    });
+  });
+  //console.log(server);
+  /*
+  probe.save().then(probe => {
+    res.status(200).json({'probe': 'probe added successfully'});
+  })
+  .catch(err => {
+      res.status(400).send('adding new probe failed');
+  });
+    */
 });
 
 serverRoutes.route('/update/:id').post(function(req, res) {

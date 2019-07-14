@@ -8,6 +8,8 @@ import CreateServer from "./components/create-server.component";
 import EditServer from "./components/edit-server.component";
 import ServerList from "./components/server-list.component";
 import Index from "./components/index.component";
+import ProbeList from './components/probe-list.component';
+import CreateProbe from './components/create-probe.component';
 
 function App() {
   return (
@@ -23,15 +25,14 @@ function App() {
                 <li className="navbar-item">
                   <Link to="/server" className="nav-link">Servers</Link>
                 </li>
-                <li className="navbar-item">
-                  <Link to="/server/create" className="nav-link">Create Server</Link>
-                </li>
               </ul>
             </div>
           </nav>
           <br/>
           <Route path="/" exact component={Index} />
           <Route path="/server" exact component={ServerList} />
+          <Route path="/server/:id" exact component={ProbeList} />
+          <Route path="/server/:id/create" exact component={CreateProbe} />
           <Route path="/server/edit/:id" component={EditServer} />
           <Route path="/server/create" component={CreateServer} />
         </div>

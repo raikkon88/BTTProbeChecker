@@ -10,14 +10,15 @@ const Server = props => (
         <td>{props.server.server_password}</td>
         <td>{props.server.server_port}</td>
         <td>
+            <Link to={"/server/"+props.server._id}>View</Link>
+        </td>
+        <td>
             <Link to={"/server/edit/"+props.server._id}>Edit</Link>
         </td>
     </tr>
 )
 
 export default class ServerList extends Component {
-
-    
 
     constructor(props) {
         super(props);
@@ -36,7 +37,7 @@ export default class ServerList extends Component {
 
     ServerList() {
         return this.state.servers.map(function(currentServer, i){
-            return <Server server={currentServer} key={i} />;
+            return <Server server={currentServer} key={i}/>;
         })
     }
 
@@ -52,6 +53,8 @@ export default class ServerList extends Component {
                             <th>User</th>
                             <th>Password</th>
                             <th>Port</th>
+                            <th></th>
+                            <th><Link to="/server/create" className="nav-link">New</Link></th>
                         </tr>
                     </thead>
                     <tbody>
