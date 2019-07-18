@@ -1,25 +1,35 @@
 const express = require('express');
-const app = express();
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const PORT = 4000;
 const mongoose = require('mongoose');
 const serverRoutes = express.Router();
+const publicRoutes = express.Router();
 
 let Server = require('./models/server.model');
 let Probe = require('./models/probe.model');
+let User = require('./models/user.model');
 
+var auth = require('./auth');
+const mongourl = "127.0.0.1:27017";
+
+var middleware = require('./middleware');
+
+const app = express();
+const PORT = 4000;
 app.use(cors());
 app.use(bodyParser.json());
 
-mongoose.connect('mongodb://127.0.0.1:27017/btt', { useNewUrlParser: true });
+// Rutas de autenticación y login
+publicRoutes.post('/auth/login', auth.emailLogin);
+
+mongoose.connect('mongodb://' + mongourl + '/btt', { useNewUrlParser: true });
 const connection = mongoose.connection;
 
 connection.once('open', function() {
   console.log("MongoDB database connection established successfully");
 })
 
-serverRoutes.route('/').get(function(req, res) {
+publicRoutes.route('/').get(function(req, res) {
   Server.find(function(err, servers) {
       if (err) {
           console.log(err);
@@ -65,15 +75,6 @@ serverRoutes.route('/:id/add').post(function(req, res) {
       res.status(400).send('adding new probe failed');
     });
   });
-  //console.log(server);
-  /*
-  probe.save().then(probe => {
-    res.status(200).json({'probe': 'probe added successfully'});
-  })
-  .catch(err => {
-      res.status(400).send('adding new probe failed');
-  });
-    */
 });
 
 serverRoutes.route('/update/:id').post(function(req, res) {
@@ -97,6 +98,7 @@ serverRoutes.route('/update/:id').post(function(req, res) {
 });
 
 app.use('/server', serverRoutes);
+app.use('/', publicRoutes);
 
 app.listen(PORT, function() {
   console.log("Server is running on Port: " + PORT);

@@ -8,6 +8,7 @@ import CreateServer from "./components/create-server.component";
 import EditServer from "./components/edit-server.component";
 import ServerList from "./components/server-list.component";
 import Index from "./components/index.component";
+import Login from "./components/login.component";
 import ProbeList from './components/probe-list.component';
 import CreateProbe from './components/create-probe.component';
 
@@ -30,6 +31,7 @@ function App() {
           </nav>
           <br/>
           <Route path="/" exact component={Index} />
+          <Route path="/login" exact component={Login} />
           <Route path="/server" exact component={ServerList} />
           <Route path="/server/:id" exact component={ProbeList} />
           <Route path="/server/:id/create" exact component={CreateProbe} />
