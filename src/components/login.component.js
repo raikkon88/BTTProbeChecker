@@ -22,14 +22,11 @@ export default class Index extends Component {
     });
   }
 
-
-
   onChangeUserPassword(e) {
     this.setState({
       user_password: e.target.value
     });
   }
-
 
   onSubmit(e) {
     e.preventDefault();
@@ -64,7 +61,7 @@ export default class Index extends Component {
               </div>
               <div className="form-group"> 
                 <label>Password: </label>
-                <input  type="text"
+                <input  type="password"
                         className="form-control"
                         value={this.state.user_password}
                         onChange={this.onChangeUserPassword}
@@ -74,7 +71,6 @@ export default class Index extends Component {
               <div className="form-group">
                 <input type="submit" value="Login" className="btn btn-primary" />
               </div>
-
             </form>
         </div>
     )

@@ -21,6 +21,7 @@ app.use(bodyParser.json());
 
 // Rutas de autenticación y login
 publicRoutes.post('/auth/login', auth.emailLogin);
+publicRoutes.post('/auth/signup', auth.emailSignup);
 
 mongoose.connect('mongodb://' + mongourl + '/btt', { useNewUrlParser: true });
 const connection = mongoose.connection;

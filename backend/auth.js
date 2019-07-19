@@ -2,46 +2,45 @@
 var mongoose = require('mongoose');
 var User = mongoose.model('User');
 var service = require('./service');
+let bcrypt = require('bcrypt');
+let config = require('./config');
 
 exports.emailSignup = function(req, res) {
-    console.log(req);
-	var user = new User({
-    	// Creamos el usuario con los campos
-        // que definamos en el Schema
-        // nombre, email, etc...
-        user_email: req.body.email,
-        user_password: req.body.password
+    /*
+    User.remove({}).exec(function(err, res){
+        console.log(res);
     });
-    
-    user.save(function(err){
-    	return res
-    		.status(200)
-        	.send({token: service.createToken(user)});
-    });
+ 
+    bcrypt.hash('marc', config.SALT, function(err, password){
+        console.log(password);
+        var user = new User({
+            user_name: 'Marc Sànchez Pifarré',
+            user_email: 'msanxes@gmail.com',
+            user_password: password
+            
+        });
+        user.save(function(err){
+            return res
+                .status(200)
+                .send({token: service.createToken(user)});
+        });
+    }); 
+    */
 };
 
 exports.emailLogin = function(req, res) {
-
-    console.log(User.find());
-	User.findOne({user_email: req.body.user_nameOrEmail.toLowerCase()}, function(err, user) {
-    	// Comprobar si hay errores
-        // Si el usuario existe o no
-        // Y si la contraseña es correcta
+    User.findOne({'user_email': req.body.user_nameOrEmail}).exec(function(err, user){
         console.log(user);
         if(err){
-            return err;
+            return 'User not found';
         }
-        else{
-            
-            if(user.user_email === req.body.user_nameOrEmail && user.user_password == req.body.user_password){
-                
+        else{    
+            bcrypt.compare(req.body.user_password, user.user_password, function (err, result){
+                console.log(result);
                 return res
                     .status(200)
                     .send({token: service.createToken(user)});
-            }
-            else{
-                return "login failed";
-            }
+            });
         }
     });
 };
