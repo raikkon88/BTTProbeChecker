@@ -8,7 +8,9 @@ export default class Index extends Component {
 
     this.state = {
       user_nameOrEmail: '',
-      user_password: ''
+      user_password: '',
+      loading: false,
+      error: false
     }
     this.onChangeUserNameOrEmail = this.onChangeUserNameOrEmail.bind(this);
     this.onChangeUserPassword = this.onChangeUserPassword.bind(this);
@@ -28,24 +30,30 @@ export default class Index extends Component {
     });
   }
 
+
   onSubmit(e) {
     e.preventDefault();
     
+
     const user = {
       user_nameOrEmail: this.state.user_nameOrEmail,
       user_password: this.state.user_password
     };
 
-    axios.post('http://localhost:4000/auth/login/', user)    
-      .then(res => console.log(res.data));
+    this.setState({ loading: true });
 
-    this.setState({
-      user_nameOrEmail: '',
-      user_password: ''
-    })
+    axios.post('http://localhost:4000/auth/login/', user)    
+      .then(res => {
+        const { from } = this.props.location.state || { from: { pathname: "/" } };
+        this.props.history.push(from);
+      })
+      .catch(error => {
+        this.setState({ error: error.request.response , loading: false })
+      });
   }
 
   render() {
+    const {loading, error } = this.state;
     return (
         <div>
             <h3>Login</h3>
@@ -68,10 +76,12 @@ export default class Index extends Component {
                         required
                         />
               </div>
-              <div className="form-group">
-                <input type="submit" value="Login" className="btn btn-primary" />
-              </div>
+              { error &&
+                <div className={'alert alert-danger'}>{error}</div>
+              }
+              <button className="btn btn-primary" disabled={loading}>Login</button>
             </form>
+            
         </div>
     )
   }

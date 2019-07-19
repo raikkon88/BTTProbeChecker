@@ -30,16 +30,19 @@ exports.emailSignup = function(req, res) {
 
 exports.emailLogin = function(req, res) {
     User.findOne({'user_email': req.body.user_nameOrEmail}).exec(function(err, user){
-        console.log(user);
-        if(err){
-            return 'User not found';
+        if(!user){
+            return res.status(401).send("Invalid user or password.");
         }
         else{    
             bcrypt.compare(req.body.user_password, user.user_password, function (err, result){
-                console.log(result);
-                return res
-                    .status(200)
-                    .send({token: service.createToken(user)});
+                if(result){
+                    return res
+                        .status(200)
+                        .send({token: service.createToken(user)});
+                }
+                else{
+                    return res.status(401).send("Invalid user or password.");
+                }
             });
         }
     });
