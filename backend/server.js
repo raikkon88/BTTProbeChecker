@@ -13,13 +13,13 @@ var auth = require('./auth');
 const mongourl = "127.0.0.1:27017";
 
 var middleware = require('./middleware');
+serverRoutes.use(middleware.ensureAuthenticated);
 
 const app = express();
 const PORT = 4000;
 app.use(cors());
 app.use(bodyParser.json());
 
-// Rutas de autenticación y login
 publicRoutes.post('/auth/login', auth.emailLogin);
 publicRoutes.post('/auth/signup', auth.emailSignup);
 
@@ -31,6 +31,7 @@ connection.once('open', function() {
 })
 
 serverRoutes.route('/').get(function(req, res) {
+  console.log("uooooo");
   Server.find(function(err, servers) {
       if (err) {
           console.log(err);
@@ -98,7 +99,9 @@ serverRoutes.route('/update/:id').post(function(req, res) {
   });
 });
 
-app.use('/server', serverRoutes);
+
+
+app.use('/server', serverRoutes, middleware.ensureAuthenticated);
 app.use('/', publicRoutes);
 
 app.listen(PORT, function() {

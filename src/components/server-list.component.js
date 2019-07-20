@@ -26,8 +26,9 @@ export default class ServerList extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/server/')
-            .then(response => {
+        axios.get('http://localhost:4000/server/',  { 
+            headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}
+        }).then(response => {
                 this.setState({ servers: response.data });
             })
             .catch(function (error){
