@@ -34,7 +34,6 @@ export default class Index extends Component {
   onSubmit(e) {
     e.preventDefault();
     
-
     const user = {
       user_nameOrEmail: this.state.user_nameOrEmail,
       user_password: this.state.user_password
@@ -44,8 +43,8 @@ export default class Index extends Component {
 
     axios.post('http://localhost:4000/auth/login/', user)    
       .then(res => {
-        const { from } = this.props.location.state || { from: { pathname: "/" } };
-        this.props.history.push(from);
+        localStorage.setItem("token", res.data.token);
+        window.location = "/server";
       })
       .catch(error => {
         this.setState({ error: error.request.response , loading: false })

@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import logo from './logo.svg';
 import './App.css';
 import "bootstrap/dist/css/bootstrap.min.css";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Redirect, Switch } from "react-router-dom";
 
 import CreateServer from "./components/create-server.component";
 import EditServer from "./components/edit-server.component";
@@ -12,34 +12,74 @@ import Login from "./components/login.component";
 import ProbeList from './components/probe-list.component';
 import CreateProbe from './components/create-probe.component';
 
-function App() {
-  return (
-    <Router>
-        <div className="container">
-          <nav className="navbar navbar-expand-lg navbar-light bg-light">
-            <a className="navbar-brand" href="https://codingthesmartway.com" target="_blank">
-              <img src={logo} width="30" height="30" alt="CodingTheSmartWay.com" />
-            </a>
-            <Link to="/" className="navbar-brand">BTT Enginyers</Link>
-            <div className="collpase navbar-collapse">
-              <ul className="navbar-nav mr-auto">
-                <li className="navbar-item">
-                  <Link to="/server" className="nav-link">Servers</Link>
-                </li>
-              </ul>
-            </div>
-          </nav>
-          <br/>
-          <Route path="/" exact component={Index} />
-          <Route path="/login" exact component={Login} />
-          <Route path="/server" exact component={ServerList} />
-          <Route path="/server/:id" exact component={ProbeList} />
-          <Route path="/server/:id/create" exact component={CreateProbe} />
-          <Route path="/server/edit/:id" component={EditServer} />
-          <Route path="/server/create" component={CreateServer} />
-        </div>
-    </Router>
-  );
-}
+const PrivateRoute = ({ component: Component, ...rest }) => (
+  
+  <Route {...rest} render={(props) => (  
+    localStorage.getItem('token') ? (
+      <Component {...props} />
+    ) : (
+      <Redirect to='/login' />
+    )
+  )} />
+)
 
-export default App;
+export default class App extends Component {
+
+  constructor(props){
+    super(props);
+    this.state = {
+        isAuthenticated: null
+    }
+  }
+
+  componentWillMount() {
+    this.setState({
+      isAuthenticated: localStorage.getItem('token') ? true : false
+    })
+  }
+
+  render(){
+    const { isAuthenticated } = this.state;
+    return (
+      <Router>
+          <div className="container">
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+              <Link to="/" className="navbar-brand">BTT Enginyers</Link>
+              <div className="collpase navbar-collapse">
+                { isAuthenticated &&
+                <ul className="navbar-nav mr-auto">  
+                  <li className="navbar-item">
+                    <Link to="/server" className="nav-link">Servers</Link>
+                  </li>
+                  <li className="navbar-item">
+                    <a onClick={ event => { localStorage.removeItem('token'); window.location = "/"} } className="nav-link">Logout</a>
+                  </li>
+                </ul>
+                }
+                {
+                  !isAuthenticated && 
+                  <ul className="navbar-nav mr-auto">  
+                    <li className="navbar-item">
+                      <Link to="/login" className="nav-link">Login</Link>
+                    </li>
+                  </ul>
+                }
+              </div> 
+            </nav>
+            <br/>
+            <Switch>
+              <Route path="/" exact component={Index} />
+              <Route path="/login" exact component={Login} />
+              <PrivateRoute path="/server" exact component={ServerList} />
+              <PrivateRoute path="/server/create" exact component={CreateServer} />
+              <PrivateRoute path="/server/:id" exact component={ProbeList} />
+              <PrivateRoute path="/server/:id/create" exact component={CreateProbe} />
+              <PrivateRoute path="/server/edit/:id" exact component={EditServer} />
+              
+            </Switch>
+          </div>
+      </Router>
+    );
+
+  }
+}

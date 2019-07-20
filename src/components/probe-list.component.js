@@ -37,7 +37,7 @@ export default class ProbeList extends Component {
     }
 
     ProbeList() {
-      if(this.state.server.server_probes == undefined){
+      if(this.state.server.server_probes === undefined){
         return <tr><td>No probes found</td></tr>
       }
       else{

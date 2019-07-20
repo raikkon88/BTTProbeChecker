@@ -30,7 +30,7 @@ connection.once('open', function() {
   console.log("MongoDB database connection established successfully");
 })
 
-publicRoutes.route('/').get(function(req, res) {
+serverRoutes.route('/').get(function(req, res) {
   Server.find(function(err, servers) {
       if (err) {
           console.log(err);
