@@ -31,7 +31,6 @@ connection.once('open', function() {
 })
 
 serverRoutes.route('/').get(function(req, res) {
-  console.log("uooooo");
   Server.find(function(err, servers) {
       if (err) {
           console.log(err);

@@ -24,7 +24,9 @@ export default class ProbeList extends Component {
     }
 
     componentDidMount() {
-      axios.get('http://localhost:4000/server/'+this.props.match.params.id)
+      console.log(this.props.match.params.id);
+      axios.get('http://localhost:4000/server/'+this.props.match.params.id, 
+        { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
         .then(response => {
           console.log(response.data);
             this.setState({ 
@@ -37,6 +39,7 @@ export default class ProbeList extends Component {
     }
 
     ProbeList() {
+      console.log(this.state.server);
       if(this.state.server.server_probes === undefined){
         return <tr><td>No probes found</td></tr>
       }

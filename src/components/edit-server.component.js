@@ -23,7 +23,8 @@ export default class EditServer extends Component {
     }
 
     componentDidMount() {
-        axios.get('http://localhost:4000/server/'+this.props.match.params.id)
+        axios.get('http://localhost:4000/server/'+this.props.match.params.id, 
+        { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
             .then(response => {
                 this.setState({
                     server_name: response.data.server_name,
@@ -78,7 +79,8 @@ export default class EditServer extends Component {
             server_port: this.state.server_port
         };
         console.log(obj);
-        axios.post('http://localhost:4000/server/update/'+this.props.match.params.id, obj)
+        axios.post('http://localhost:4000/server/update/'+this.props.match.params.id, obj, 
+        { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
             .then(res => console.log(res.data));
         
         this.props.history.push('/server');

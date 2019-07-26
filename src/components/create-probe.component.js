@@ -28,7 +28,8 @@ export default class CreateProbe extends Component {
       probe_server: this.props.match.params.id
     };
 
-    axios.post('http://localhost:4000/server/' + this.props.match.params.id + "/add", newProbe)
+    axios.post('http://localhost:4000/server/' + this.props.match.params.id + "/add", newProbe, 
+    { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
     .then(res => console.log(res.data));
 
     this.setState({

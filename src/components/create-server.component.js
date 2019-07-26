@@ -62,7 +62,8 @@ export default class CreateServer extends Component {
       server_port: this.state.server_port
     };
 
-    axios.post('http://localhost:4000/server/add', newServer)
+    axios.post('http://localhost:4000/server/add', newServer, 
+    { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
       .then(res => console.log(res.data));
 
     this.setState({
