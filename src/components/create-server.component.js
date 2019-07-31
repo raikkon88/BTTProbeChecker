@@ -81,15 +81,6 @@ export default class CreateServer extends Component {
         <div style={{marginTop: 10}}>
           <h3>Create New Server</h3>
           <form onSubmit={this.onSubmit}>
-              <div className="form-group"> 
-                  <label>Server Name: </label>
-                  <input  type="text"
-                          className="form-control"
-                          value={this.state.server_name}
-                          onChange={this.onChangeServerName}
-                          required
-                          />
-              </div>
               <div className="form-group">
                   <label>Server Url: </label>
                   <input 
@@ -138,3 +129,16 @@ export default class CreateServer extends Component {
       )
   }
 }
+
+/* 
+
+<div className="form-group"> 
+  <label>Server Name: </label>
+  <input  type="text"
+          className="form-control"
+          value={this.state.server_name}
+          onChange={this.onChangeServerName}
+          required
+          />
+</div>
+*/

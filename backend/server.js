@@ -4,6 +4,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const serverRoutes = express.Router();
 const publicRoutes = express.Router();
+const axios = require('axios');
 
 let Server = require('./models/server.model');
 let Probe = require('./models/probe.model');
@@ -48,14 +49,29 @@ serverRoutes.route('/:id').get(function(req, res) {
 });
 
 serverRoutes.route('/add').post(function(req, res) {
-  let server = new Server(req.body);
-  server.save()
+  axios.get('http://' + req.body.server_user + ":" + req.body.server_password + "@" + req.body.server_url + ":" + req.body.server_port + "/data/LoxAPP3.json")
+  .then(response => {
+    console.log(response.data.msInfo);
+    let server = new Server({
+      server_serial_number: response.data.msInfo.serialNr,
+      server_lecture_frequency: req.body.server_lecture_frequency,
+      server_name:response.data.msInfo.msName,
+      server_url:req.body.server_url,
+      server_user:req.body.server_user,
+      server_password:req.body.server_password,
+      server_port:req.body.server_port
+    });
+    server.save()
       .then(server => {
           res.status(200).json({'server': 'server added successfully'});
       })
       .catch(err => {
-          res.status(400).send('adding new server failed');
+        res.status(400).send('adding new server failed');
       });
+  })
+  .catch(error => {
+    console.log("Failed to load http request to server: " + req.body.server_user );
+  });
 });
 
 serverRoutes.route('/:id/add').post(function(req, res) {
@@ -78,23 +94,35 @@ serverRoutes.route('/:id/add').post(function(req, res) {
   });
 });
 
+serverRoutes.route('/delete/:id').delete(function(req, res){
+  Server.deleteOne({_id: req.params.id } ,function(err){
+    console.log(err);
+    if(err){
+      res.status(404).send("Server does not exist");
+    }
+    else {
+      res.status(200).send();
+    }
+  });
+});
+
 serverRoutes.route('/update/:id').post(function(req, res) {
   Server.findById(req.params.id, function(err, server) {
     if (!server)
         res.status(404).send("data is not found");
-    else
-      server.server_name = req.body.server_name;
+    else{
       server.server_url = req.body.server_url;
       server.server_user = req.body.server_user;
       server.server_password = req.body.server_password;
       server.server_port = req.body.server_port;
 
       server.save().then(server => {
-              res.json('server updated!');
-          })
-          .catch(err => {
-              res.status(400).send("Update not possible");
-          });
+          res.json('server updated!');
+      })
+      .catch(err => {
+          res.status(400).send("Update not possible");
+      });
+    }
   });
 });
 
