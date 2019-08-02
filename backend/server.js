@@ -115,6 +115,8 @@ serverRoutes.route('/update/:id').post(function(req, res) {
       server.server_user = req.body.server_user;
       server.server_password = req.body.server_password;
       server.server_port = req.body.server_port;
+      console.log("------------------");
+      console.log(req.body);
 
       server.save().then(server => {
           res.json('server updated!');
