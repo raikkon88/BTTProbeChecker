@@ -7,13 +7,11 @@ export default class CreateServer extends Component {
       super(props);
 
       this.state = {
-        server_name: '',
         server_url: '',
         server_user: '',
         server_port: '',
         server_password: ''
       }
-      this.onChangeServerName = this.onChangeServerName.bind(this);
       this.onChangeServerUrl = this.onChangeServerUrl.bind(this);
       this.onChangeServerUser = this.onChangeServerUser.bind(this);
       this.onChangeServerPort = this.onChangeServerPort.bind(this);
@@ -55,7 +53,6 @@ export default class CreateServer extends Component {
     e.preventDefault();
     
     const newServer = {
-      server_name: this.state.server_name,
       server_url: this.state.server_url,
       server_user: this.state.server_user,
       server_password: this.state.server_password,
@@ -67,7 +64,6 @@ export default class CreateServer extends Component {
       .then(res => console.log(res.data));
 
     this.setState({
-      server_name: '',
       server_url: '',
       server_user: '',
       server_port: '',

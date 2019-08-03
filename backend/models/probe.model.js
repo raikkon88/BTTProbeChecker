@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 let Probe = new Schema({
+  probe_uuidAction: String,
   probe_name: String,
   probe_type: String,
   probe_room: String,

@@ -4,12 +4,12 @@ import $ from 'jquery';
 
 const Control = props => (
   <tr>
-      <td>{props.control.uuidAction}</td>
-      <td>{props.control.name}</td>
-      <td>{props.control.type}</td>
-      <td>{props.control.room}</td>
-      <td>{props.control.cat}</td>
-      <td><input className="checkbox" key={props.id} name={props.control.uuidAction} type="checkbox"/> </td>
+      <td>{props.control.probe_uuidAction}</td>
+      <td>{props.control.probe_name}</td>
+      <td>{props.control.probe_type}</td>
+      <td>{props.control.probe_room}</td>
+      <td>{props.control.probe_category}</td>
+      <td><input onChange={props.handle} defaultChecked={props.control.probe_checked} className="checkbox" key={props.id} name={props.control.probe_uuidAction} type="checkbox"/> </td>
   </tr>
 )
 
@@ -22,90 +22,84 @@ export default class ConfigureServer extends Component {
         controls: []
       }
       this.onNextButtonClicked = this.onNextButtonClicked.bind(this);
+      this.handleCheck = this.handleCheck.bind(this);
   }
 
   componentDidMount() {
     axios.get('http://localhost:4000/server/'+this.props.match.params.id, 
     { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
         .then(response => {
+            let serverReceived = response.data;
             this.setState({
-                server: response.data
+                server: serverReceived
             })  
+            
             axios.get('http://' + this.state.server.server_url + ":" + this.state.server.server_port + "/data/LoxAPP3.json",  
-             { withCredentials: true,  auth: {  username: this.state.server.server_user + '' , password: this.state.server.server_password + '' }})
+            { withCredentials: true,  auth: {  username: this.state.server.server_user + '' , password: this.state.server.server_password + '' }})
             .then(response => {
+
+              let controls = []; 
+
+              for(var elementId in response.data.controls){
+
+                let element = response.data.controls[elementId];
+                
+                controls.push({
+                  probe_uuidAction: element.uuidAction,
+                  probe_name: element.name,
+                  probe_type: element.type,
+                  probe_room: element.room,
+                  probe_category: element.cat,
+                  probe_server: serverReceived._id,
+                  probe_checked: this.state.server.server_probes.filter(el => el.probe_uuidAction === element.uuidAction).length > 0,
+                  probe_lectures: []
+                });
+              }
               this.setState({
-                controls: response.data.controls
-              })
+                controls: controls
+              });
             })
             .catch(error => {
               console.log(error);
-            });         
-        })
+            });
+          
+        })     
         .catch(error => {
           console.log(error);
         })
   }
 
   onNextButtonClicked(){
-    $( "input:checked" ).map((index, item) => {
-
-      let serverN = this.state.server;
-      
-      /**
-       * TODO : M'he quedat aquí, se'm repeteixen els probes, hem de mirar si hi son i treure'ls.
-       */
-      var found = false;
-      for(var element in serverN.server_probes){
-        if(element._id === item.name){
-          found = true;
-          break;
-        }
-      }
-      if(!found){
-        let control = this.state.controls[item.name];
-
-        serverN.server_probes.push({
-          _id: control.uuidAction,
-          probe_name: control.name,
-          probe_type: control.type,
-          probe_room: control.room,
-          probe_category: control.cat,
-          probe_server: serverN._id,
-          probe_lectures: []
-        });
-  
-        this.setState({
-          server: serverN
-        })
-        
-      console.log(this.state.server);
-      
-      axios.post('http://localhost:4000/server/update/'+this.props.match.params.id, this.state.server,
-        { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}}).then(response => {
-          console.log("Well Done!!");
-        }).catch(error => {
-          console.log("Failed to update server ---> " + error);
-        });
-      }
-    });
+    console.log(this.state.server.server_probes);
+    axios.post('http://localhost:4000/server/update/'+this.props.match.params.id, this.state.server,
+    { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
+      .then(response => {
+        console.log(response);
+        window.location = "/server/" + this.state.server._id;
+      }).catch(error => {
+        console.log("Failed to update server ---> " + error);
+      });
   }
 
+  /**
+   * Mirem en quin estat està l'input i l'afegim o no al servidor.
+   * @param {*} element És l'input
+   */
+  handleCheck(element){
 
-  ControlsList(){
-    if(this.state.controls === undefined){
-      return <tr><td>No Controls found</td></tr>
+    if(element.target.checked){
+      let control = this.state.controls.filter(el => el.probe_uuidAction === element.target.name)[0];
+      this.state.server.server_probes.push(control)
     }
     else{
-      var controlList = [];
-      for(var key in this.state.controls){
-        controlList.push(this.state.controls[key]);
-      }
-
-      return controlList.map(function(currentControl, i){
-        return <Control control={currentControl} key={i}/>;
-      })
+      this.state.server.server_probes = this.state.server.server_probes.filter(el => el.probe_uuidAction !== element.target.name);
     }
+  }
+
+  ControlsList(component){
+    return this.state.controls.map(function(currentControl, i){
+      return <Control handle={component.handleCheck} control={currentControl} key={i} />;
+    })
   }
 
   render() {
@@ -128,7 +122,7 @@ export default class ConfigureServer extends Component {
                 </tr>
             </thead>
             <tbody>
-              { this.ControlsList() }
+              { this.ControlsList(this) }
             </tbody>
         </table>
       </div>
