@@ -112,17 +112,44 @@ serverRoutes.route('/delete/:id').delete(function(req, res){
 });
 
 serverRoutes.route('/update/:id').post(function(req, res) {
+  
   Server.findById(req.body._id).populate("server_probes")
   .then(server => {
-
-    server.server_probes = [];
-
-    // Busquem si aquest server té controls
-
+    // Busquem si te controls. 
     Probe.find({"probe_server" : server._id}).then(result => {
-      result.map(element => {
-        element.deleteMany({"probe_uuidAction": el.probe_uuidAction}).catch(err => {console.log("Failed to delete a probe ... ")});
+      console.log("Ha trobat els controls");
+      console.log(result.map(a => a.probe_uuidAction));
+      Probe.deleteMany({ probe_uuidAction: { $in:result.map(a => a.probe_uuidAction) } })
+      .then(result => {
+        // Aquí teòricament ja no hi ha controls. 
+        console.log("Ha Esborrat els controls.");
+        // Hem afegit els nous controls. 
+        let probes = [];
+        req.body.server_probes.map(element => {
+          probes.push(new Probe(element));
+        });
+        Probe.insertMany(probes).then(result => {
+          console.log("Ja estan inserits els nous controls.");
+          server.server_probes = result;
+          server.save().then(result => {
+            console.log("S'ha inserit el nou server.");
+            console.log(server);
+            res.status(200).send();
+          })
+          .catch(err => {
+            console.log("Ha fallat la inserció dels controls.");
+            res.status(500).send("Can't add server with new controls.");
+
+          })
+        })
+        .catch(err => {
+          res.status(500).send("Can't add new controls.");
+        });
+      })
+      .catch(err => {
+        res.status(500).send("Can't delete old controls.");
       });
+      /*
       var n = 0;
       req.body.server_probes.map(element => {
         let new_probe= new Probe(element);
@@ -141,7 +168,7 @@ serverRoutes.route('/update/:id').post(function(req, res) {
             console.log("no s'ha pogut guardar el server modificat");
           })
         }
-      });
+      });*/
     })
     .catch(err => {
       res.status(404).send("Server does not exist");
