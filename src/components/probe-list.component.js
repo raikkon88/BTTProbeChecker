@@ -50,9 +50,9 @@ export default class ProbeList extends Component {
             .then(result => {
               let xml = new XMLParser().parseFromString(result.data);
               console.log("data received");
-              document.getElementById(currentProbe.probe_uuidAction).innerHTML = xml.getElementsByTagName('LL').pop().attributes.value
+              document.getElementById(currentProbe.probe_uuidAction).innerHTML = xml.getElementsByTagName('LL').pop().attributes.value;
             }) 
-          return <Probe probe={currentProbe} key={i}/>;;
+          return <Probe probe={currentProbe} key={i}/>;
         })
       }
     }
