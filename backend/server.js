@@ -117,29 +117,19 @@ serverRoutes.route('/update/:id').post(function(req, res) {
   .then(server => {
     // Busquem si te controls. 
     Probe.find({"probe_server" : server._id}).then(result => {
-      console.log("Ha trobat els controls");
-      console.log(result.map(a => a.probe_uuidAction));
       Probe.deleteMany({ probe_uuidAction: { $in:result.map(a => a.probe_uuidAction) } })
       .then(result => {
-        // Aquí teòricament ja no hi ha controls. 
-        console.log("Ha Esborrat els controls.");
-        // Hem afegit els nous controls. 
         let probes = [];
         req.body.server_probes.map(element => {
           probes.push(new Probe(element));
         });
         Probe.insertMany(probes).then(result => {
-          console.log("Ja estan inserits els nous controls.");
           server.server_probes = result;
           server.save().then(result => {
-            console.log("S'ha inserit el nou server.");
-            console.log(server);
             res.status(200).send();
           })
           .catch(err => {
-            console.log("Ha fallat la inserció dels controls.");
             res.status(500).send("Can't add server with new controls.");
-
           })
         })
         .catch(err => {
@@ -149,159 +139,14 @@ serverRoutes.route('/update/:id').post(function(req, res) {
       .catch(err => {
         res.status(500).send("Can't delete old controls.");
       });
-      /*
-      var n = 0;
-      req.body.server_probes.map(element => {
-        let new_probe= new Probe(element);
-        new_probe.save().then(result => {
-          server.server_probes.push(new_probe);
-        })
-        .catch(err => {
-          console.log("Hi ha hagut un error al actualitzar els controls.");
-        })
-        n++;
-        if(n === req.body.server_probes.length){
-          server.save().then(result => {
-            res.status(200).send("S'ha actualitzat tot");
-          })
-          .catch(err => {
-            console.log("no s'ha pogut guardar el server modificat");
-          })
-        }
-      });*/
     })
     .catch(err => {
       res.status(404).send("Server does not exist");
-    })
-  
+    });
   })
   .catch(err => {
     res.status(404).send("Server does not exist");
   });
-  /*
-  Server.findById(req.body._id)
-    .then(server => {
-      let probes = [];
-      let ids = [];
-      req.body.server_probes.map(element => {
-        ids.push(element.uuidAction);
-        probes.push(new Probe(element));
-      });
-
-      Probe.update({'probe_uuidAction': ids}, probes, {upsert: true, setDefaultsOnInsert: true})
-      .then(result => {
-        server.server_probes = probes;
-        server.save().then(result => {
-          res.status(200).send("Server updated");
-        })
-        .catch(err => {
-          res.status(500).send("server failed to update");
-        })
-        
-      })
-      .catch(err => {
-        res.status(500).send("Probes not updated");
-      });
-    })
-    .catch(err => {
-      res.status(404).send("Server does not exist");
-    });
- */
-  
-
-  
-/*
-  Probe.updateMany({'probe_server': server}, probes, {upsert: true, setDefaultsOnInsert: true})
-    .then(result => {
-      console.log("all records has been updated and putted inside the server probes");
-      console.log(server);
-      probes.map(prob => {
-        server.server_probes.push(prob);
-      })
-      console.log(server);
-      server.save()
-        .then(result => {
-          console.log( server);
-          res.status(400).send(server);
-        })
-        .catch(err => {
-          console.log("error...." + err);
-          res.status(400).send('Failed');
-        });
-    })
-    .catch(err => {
-      res.status(400).send('Failed');
-    });
-*/
-/*  var n = 0;
-  req.body.server_probes.map(element => {
-
-    let probe = new Probe(element);
-    probe.save().then(probe => {
-      console.log("element saved");
-    }).catch(err => {
-      console.log("el elemento ya existe");
-    })
-    server.server_probes.push(probe);
-    n++;
-
-    if(n === req.body.server_probes.length){
-      Server.updateOne({"_id": server._id}, server, function(err, server){
-        if(err){
-          console.log(err);
-          res.status(400).send('Failed');
-        }
-        else{
-          console.log(server);
-          res.status(200).send(server);
-        }
-      });
-    }
-  });
-*/
-  
-
-  /*
-  Probe.findById(element._id).exec(function(err, probe) {
-      if(err){
-        let probe = new Probe(element);
-        
-      }
-      n++;
-      if(n === req.body.server_probes.length){
-        server.save().then(server => {
-          res.json('server updated!');
-        })
-        .catch(err => {
-            res.status(400).send("Update not possible");
-        });
-      }
-    }) 
-  
-  
-  
-  
-  
-  
-  Server.findById(req.params.id, function(err, server) {
-    if (!server){
-      console.log("Not found");
-      res.status(404).send("data is not found");
-    }
-    else{
-      Server.update()
-    
-      /*server.server_url = req.body.server_url;
-      server.server_user = req.body.server_user;
-      server.server_password = req.body.server_password;
-      server.server_port = req.body.server_port;
-      // Reinicialitzem els controls. 
-      server.server_probes = [];
-      var n = 0;
-
-      
-    }
-  });*/
 });
 
 
