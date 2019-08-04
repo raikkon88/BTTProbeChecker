@@ -10,7 +10,7 @@ exports.emailSignup = function(req, res) {
     User.remove({}).exec(function(err, res){
         console.log(res);
     });
- 
+ */
     bcrypt.hash('marc', config.SALT, function(err, password){
         console.log(password);
         var user = new User({
@@ -25,7 +25,7 @@ exports.emailSignup = function(req, res) {
                 .send({token: service.createToken(user)});
         });
     }); 
-    */
+    
 };
 
 exports.emailLogin = function(req, res) {

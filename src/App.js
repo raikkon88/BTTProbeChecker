@@ -44,28 +44,33 @@ export default class App extends Component {
     return (
       <Router>
           <div className="container">
-            <nav className="navbar navbar-expand-lg navbar-light bg-light">
-              <Link to="/" className="navbar-brand">BTT Enginyers</Link>
-              <div className="collpase navbar-collapse">
+            <nav className="navbar navbar-collapse navbar-dark bg-dark">
+              <div className="container-fluid">
+                <div className="navbar-header">
+                  <Link to="/" className="navbar-brand">BTT Enginyers</Link>
+                </div>
                 { isAuthenticated &&
-                <ul className="navbar-nav mr-auto">  
+                <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
                   <li className="navbar-item">
                     <Link to="/server" className="nav-link">Servers</Link>
                   </li>
+                </ul>
+                }
+                { isAuthenticated &&
+                <ul className="nav navbar-nav">
                   <li className="navbar-item">
                     <a onClick={ event => { localStorage.removeItem('token'); window.location = "/"} } className="nav-link">Logout</a>
                   </li>
                 </ul>
                 }
-                {
-                  !isAuthenticated && 
-                  <ul className="navbar-nav mr-auto">  
-                    <li className="navbar-item">
-                      <Link to="/login" className="nav-link">Login</Link>
-                    </li>
-                  </ul>
+                { !isAuthenticated && 
+                <ul className="nav navbar-nav navbar-right">
+                  <li className="navbar-item">
+                    <Link to="/login" className="nav-link">Login</Link>
+                  </li>
+                </ul>
                 }
-              </div> 
+              </div>
             </nav>
             <br/>
             <Switch>

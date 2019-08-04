@@ -28,8 +28,6 @@ app.use(bodyParser.json());
 publicRoutes.post('/auth/login', auth.emailLogin);
 publicRoutes.post('/auth/signup', auth.emailSignup);
 
-
-
 connection.once('open', function() {
   console.log("MongoDB database connection established successfully");
 })

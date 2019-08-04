@@ -1,17 +1,15 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import axios from 'axios';
+import XMLParser  from 'react-xml-parser';
 
 const Probe = props => (
     <tr>
-        <td>{props.probe._id}</td>
+        <td>{props.probe.probe_uuidAction}</td>
         <td>{props.probe.probe_name}</td>
-        <td>
-            <Link to={"/server/probes/"+props.probe._id}>View</Link>
-        </td>
-        <td>
-            <Link to={"/server/probes/edit/"+props.probe._id}>Edit</Link>
-        </td>
+        <td>{props.probe.probe_type}</td>
+        <td>{props.probe.probe_category}</td>
+        <td>{props.probe.probe_room}</td>
+        <td id={props.probe.probe_uuidAction}></td>
     </tr>
 )
 
@@ -21,6 +19,7 @@ export default class ProbeList extends Component {
       this.state = {
         server: {}
       };
+      this.onConfigureButtonClicked = this.onConfigureButtonClicked.bind(this);
     }
 
     componentDidMount() {
@@ -38,32 +37,46 @@ export default class ProbeList extends Component {
         })
     }
 
+
     ProbeList() {
-      console.log(this.state.server);
       if(this.state.server.server_probes === undefined){
         return <tr><td>No probes found</td></tr>
       }
       else{
-        return this.state.server.server_probes.map(function(currentProbe, i){
-          console.log(currentProbe);
-          return <Probe probe={currentProbe} key={i} />;
+        let server = this.state.server;
+        return server.server_probes.map(function(currentProbe, i){
+          axios.get('http://' + server.server_url + ":" + server.server_port + "/dev/sps/io/" + currentProbe.probe_uuidAction,  
+            { withCredentials: true,  auth: {  username: server.server_user + '' , password: server.server_password + '' }})
+            .then(result => {
+              let xml = new XMLParser().parseFromString(result.data);
+              console.log("data received");
+              document.getElementById(currentProbe.probe_uuidAction).innerHTML = xml.getElementsByTagName('LL').pop().attributes.value
+            }) 
+          return <Probe probe={currentProbe} key={i}/>;;
         })
       }
+    }
+
+    onConfigureButtonClicked(){
+      window.location = "/server/" + this.state.server._id + "/configure"
     }
 
     render() {
         return (
             <div>
-              <h3 className="col-xs-10">{this.state.server.server_name}</h3>
+              <div className="title-container">
+                <h3 className="col-xs-10">{this.state.server.server_name}</h3>
+                <button type="button" className="btn btn-outline-primary" onClick={this.onConfigureButtonClicked}>Configure</button>
+              </div>
               <table className="table table-striped" style={{ marginTop: 20 }} >
                   <thead>
                       <tr>
                         <th>Id</th>
                         <th>Name</th>
-                        <th></th>
-                        <th><Link to={{
-                            pathname: '/server/' + this.state.server._id + "/create"
-                          }} className="col-xs-2">New Probe</Link></th>
+                        <th>Type</th>
+                        <th>Category</th>
+                        <th>Room</th>
+                        <th>Last Value</th>
                       </tr>
                   </thead>
                   <tbody>

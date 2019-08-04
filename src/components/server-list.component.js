@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+import { MdModeEdit } from "react-icons/md";
+import { MdRemoveRedEye } from "react-icons/md";
 
 const Server = props => (
     <tr>
@@ -10,10 +12,8 @@ const Server = props => (
         <td>{props.server.server_password}</td>
         <td>{props.server.server_port}</td>
         <td>
-            <Link to={"/server/"+props.server._id}>View</Link>
-        </td>
-        <td>
-            <Link to={"/server/edit/"+props.server._id}>Edit</Link>
+            <Link to={"/server/"+props.server._id}><MdRemoveRedEye /></Link>
+            <Link to={"/server/edit/"+props.server._id}><MdModeEdit /></Link>
         </td>
     </tr>
 )
@@ -54,7 +54,6 @@ export default class ServerList extends Component {
                             <th>User</th>
                             <th>Password</th>
                             <th>Port</th>
-                            <th></th>
                             <th><Link to="/server/create" className="nav-link">New</Link></th>
                         </tr>
                     </thead>

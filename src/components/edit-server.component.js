@@ -7,6 +7,7 @@ export default class EditServer extends Component {
         super(props);
 
         this.state = {
+            _id: '',
             server_name: '',
             server_url: '',
             server_user: '',
@@ -19,6 +20,7 @@ export default class EditServer extends Component {
         this.onChangeServerUser = this.onChangeServerUser.bind(this);
         this.onChangeServerPort = this.onChangeServerPort.bind(this);
         this.onChangeServerPassword = this.onChangeServerPassword.bind(this);
+        this.onConfigureButtonClicked = this.onConfigureButtonClicked.bind(this);
         this.onSubmit = this.onSubmit.bind(this);
     }
 
@@ -27,6 +29,7 @@ export default class EditServer extends Component {
         { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
             .then(response => {
                 this.setState({
+                    _id: response.data._id,
                     server_name: response.data.server_name,
                     server_url: response.data.server_url,
                     server_user: response.data.server_user,
@@ -69,6 +72,10 @@ export default class EditServer extends Component {
         });
     }
 
+    onConfigureButtonClicked(){
+        window.location = "/server/" + this.state._id + "/configure";
+    }
+
     onSubmit(e) {
         e.preventDefault();
         const obj = {
@@ -89,7 +96,10 @@ export default class EditServer extends Component {
     render() {
         return (
             <div>
-                <h3 align="center">Update Server</h3>
+                <div className="title-container">
+                    <h3 className="col-xs-10">{this.state.server_name}</h3>
+                    <button type="button" className="btn btn-outline-primary" onClick={this.onConfigureButtonClicked}>Configure</button>
+                </div>
                 <form onSubmit={this.onSubmit}>
                     <div className="form-group"> 
                         <label>Server Name: </label>
