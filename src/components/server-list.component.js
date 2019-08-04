@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdRemoveRedEye } from "react-icons/md";
-
+import { IoIosAddCircleOutline } from "react-icons/io";
 const Server = props => (
     <tr>
         <td>{props.server.server_name}</td>
@@ -12,8 +12,8 @@ const Server = props => (
         <td>{props.server.server_password}</td>
         <td>{props.server.server_port}</td>
         <td>
-            <Link to={"/server/"+props.server._id}><MdRemoveRedEye /></Link>
-            <Link to={"/server/edit/"+props.server._id}><MdModeEdit /></Link>
+            <Link className="btn" to={"/server/"+props.server._id}><MdRemoveRedEye /></Link>
+            <Link className="btn" to={"/server/edit/"+props.server._id}><MdModeEdit /></Link>
         </td>
     </tr>
 )
@@ -23,6 +23,7 @@ export default class ServerList extends Component {
     constructor(props) {
         super(props);
         this.state = {servers: []};
+        this.onNewButtonClicked = this.onNewButtonClicked.bind(this);
     }
 
     componentDidMount() {
@@ -42,10 +43,17 @@ export default class ServerList extends Component {
         })
     }
 
+    onNewButtonClicked(){
+        window.location = "/server/create";
+    }
+
     render() {
         return (
             <div>
-                <h3>Servers List</h3>
+                <div className="title-container">
+                    <h3>Servers List</h3>
+                    <button type="button" className="btn btn-outline-primary" onClick={this.onNewButtonClicked}>New</button>
+                </div>
                 <table className="table table-striped" style={{ marginTop: 20 }} >
                     <thead>
                         <tr>
@@ -54,7 +62,7 @@ export default class ServerList extends Component {
                             <th>User</th>
                             <th>Password</th>
                             <th>Port</th>
-                            <th><Link to="/server/create" className="nav-link">New</Link></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
