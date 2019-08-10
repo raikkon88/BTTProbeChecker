@@ -84,22 +84,46 @@ serverRoutes.route('/add').post(function(req, res) {
 
 serverRoutes.route('/grid/:id').get(function(req, res){
   
-   Probe.find({ probe_server: req.params.id}).populate('probe_lectures').then(result => {
+  Probe.find({probe_server: req.params.id}).then(result => {
+    let ids = []
+    result.map(element => {
+      ids.push(element._id);
+    })
+    Lecture.aggregate([
+      {$match : { lecture_probe: { $in: ids }}},
+      {$group : {_id:"$lecture_date" , lectures: {$push: { lecture_name:"$lecture_probe.probe_name", lecture_value:"$lecture_value"} }}} 
+    ])
+    .then(result => {
+      res.status(200).send(result);
+    })
+    .catch(err => {
+      console.log("Can't load data for the grid.");
+      res.status(500).send("Can't load data for the grid.");
+    })
+})
+.catch(err => {
+  console.log("Can't load data for the grid.");
+  res.status(500).send("Can't load data for the grid.");
+})
+   /*Probe.find({ probe_server: req.params.id}).populate('probe_lectures').then(result => {
     var i = 0;
-    result.map(probe => {
+
+    
+
+    /*result.map(probe => {
       Lecture.find({ lecture_probe: probe._id }).sort('-lecture_date').then(resLectures => {
         result.probe_lectures = resLectures;
         i++;
         if(i === result.length){
           console.log("send!!");
-          res.status(200).send(result);
+          
         }
       })
     })
   })
   .catch(err => {
     console.log("Error loading probe with probe_lectures");
-  });
+  });*/
 });
 
 serverRoutes.route('/:id/add').post(function(req, res) {
