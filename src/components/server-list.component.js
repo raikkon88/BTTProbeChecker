@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { MdModeEdit } from "react-icons/md";
 import { MdRemoveRedEye } from "react-icons/md";
-import { IoIosAddCircleOutline } from "react-icons/io";
+import { IoMdGrid } from "react-icons/io";
+
 const Server = props => (
     <tr>
         <td>{props.server.server_name}</td>
@@ -13,6 +14,7 @@ const Server = props => (
         <td>{props.server.server_port}</td>
         <td>
             <Link className="btn" to={"/server/"+props.server._id}><MdRemoveRedEye /></Link>
+            <Link className="btn" to={"/server/grid/"+props.server._id}><IoMdGrid /></Link>
             <Link className="btn" to={"/server/edit/"+props.server._id}><MdModeEdit /></Link>
         </td>
     </tr>

@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import { MdRemoveRedEye } from "react-icons/md";
 import XMLParser  from 'react-xml-parser';
 
 const Probe = props => (
@@ -9,7 +11,7 @@ const Probe = props => (
         <td>{props.probe.probe_type}</td>
         <td>{props.probe.probe_category}</td>
         <td>{props.probe.probe_room}</td>
-        <td id={props.probe.probe_uuidAction}></td>
+        <td><Link className="btn" to={"/probe/"+props.probe._id}><MdRemoveRedEye /></Link></td>
     </tr>
 )
 
@@ -45,13 +47,13 @@ export default class ProbeList extends Component {
       else{
         let server = this.state.server;
         return server.server_probes.map(function(currentProbe, i){
-          axios.get('http://' + server.server_url + ":" + server.server_port + "/dev/sps/io/" + currentProbe.probe_uuidAction,  
+          /*axios.get('http://' + server.server_url + ":" + server.server_port + "/dev/sps/io/" + currentProbe.probe_uuidAction,  
             { withCredentials: true,  auth: {  username: server.server_user + '' , password: server.server_password + '' }})
             .then(result => {
               let xml = new XMLParser().parseFromString(result.data);
               console.log("data received");
               document.getElementById(currentProbe.probe_uuidAction).innerHTML = xml.getElementsByTagName('LL').pop().attributes.value;
-            }) 
+            }) */
           return <Probe probe={currentProbe} key={i}/>;
         })
       }

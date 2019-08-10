@@ -8,6 +8,7 @@ const axios = require('axios');
 const mongourl = "127.0.0.1:27017";
 var CronJob = require('cron').CronJob;
 var parseString = require('xml2js').parseString;
+var moment = require('moment-timezone');
 
 
 mongoose.connect('mongodb://' + mongourl + '/btt', { useNewUrlParser: true });
@@ -28,8 +29,6 @@ const app = express();
 const PORT = 4000;
 app.use(cors());
 app.use(bodyParser.json());
-
-
 
 publicRoutes.post('/auth/login', auth.emailLogin);
 publicRoutes.post('/auth/signup', auth.emailSignup);
@@ -80,6 +79,26 @@ serverRoutes.route('/add').post(function(req, res) {
   })
   .catch(error => {
     console.log("Failed to load http request to server: " + req.body.server_user );
+  });
+});
+
+serverRoutes.route('/grid/:id').get(function(req, res){
+  
+   Probe.find({ probe_server: req.params.id}).populate('probe_lectures').then(result => {
+    var i = 0;
+    result.map(probe => {
+      Lecture.find({ lecture_probe: probe._id }).sort('-lecture_date').then(resLectures => {
+        result.probe_lectures = resLectures;
+        i++;
+        if(i === result.length){
+          console.log("send!!");
+          res.status(200).send(result);
+        }
+      })
+    })
+  })
+  .catch(err => {
+    console.log("Error loading probe with probe_lectures");
   });
 });
 
@@ -180,7 +199,7 @@ new CronJob('1 * * * * *', function(){
             }
             else{
               let lecture = new Lecture({
-                lecture_date: new Date(),
+                lecture_date: moment().tz("Europe/Madrid").format(),
                 lecture_value: lectureResult.LL.$.value,
                 lecture_probe: probe._id
               })
