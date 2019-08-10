@@ -6,6 +6,9 @@ const serverRoutes = express.Router();
 const publicRoutes = express.Router();
 const axios = require('axios');
 const mongourl = "127.0.0.1:27017";
+var CronJob = require('cron').CronJob;
+var parseString = require('xml2js').parseString;
+
 
 mongoose.connect('mongodb://' + mongourl + '/btt', { useNewUrlParser: true });
 const connection = mongoose.connection;
@@ -13,6 +16,7 @@ const connection = mongoose.connection;
 let Server = require('./models/server.model');
 let Probe = require('./models/probe.model');
 let User = require('./models/user.model');
+let Lecture = require('./models/lecture.model');
 
 var auth = require('./auth');
 
@@ -24,6 +28,8 @@ const app = express();
 const PORT = 4000;
 app.use(cors());
 app.use(bodyParser.json());
+
+
 
 publicRoutes.post('/auth/login', auth.emailLogin);
 publicRoutes.post('/auth/signup', auth.emailSignup);
@@ -155,3 +161,50 @@ app.use('/', publicRoutes);
 app.listen(PORT, function() {
   console.log("Server is running on Port: " + PORT);
 });
+
+
+/**
+ * Procés de cron per alimentar la base de dades des dels miniservers. 
+ */
+new CronJob('1 * * * * *', function(){
+  Server.find({}).populate('server_probes')
+  .then(result => {
+    result.map(server => {
+      server.server_probes.map(probe => {
+        axios.get('http://' + server.server_url + ":" + server.server_port + "/dev/sps/io/" + probe.probe_uuidAction,  
+          { withCredentials: true,  auth: {  username: server.server_user + '' , password: server.server_password + '' }})
+        .then(result => {
+          parseString(result.data, function (err, lectureResult) {
+            if(err){
+              console.err("Error in parse");
+            }
+            else{
+              let lecture = new Lecture({
+                lecture_date: new Date(),
+                lecture_value: lectureResult.LL.$.value,
+                lecture_probe: probe._id
+              })
+              
+              lecture.save().then(res => {
+                probe.probe_lectures.push(lecture);
+                probe.save().then(res => {
+                  console.log("All stored");
+                })
+                .catch(err => {
+                  console.err("Error saving the lecture")
+                })
+              })
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+      });
+    });
+  })
+  .catch(error => {
+    console.log(error);
+  });
+}, null, true, 'Europe/Madrid');
+
