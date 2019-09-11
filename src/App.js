@@ -13,6 +13,7 @@ import ProbeList from './components/probe-list.component';
 import CreateProbe from './components/create-probe.component';
 import ConfigureServer from './components/configure-server.component';
 import ProbeGrid from './components/probe-grid.component';
+import LectureListScreen from './components/LectureListScreen.component';
 
 const PrivateRoute = ({ component: Component, ...rest }) => (
   
@@ -84,6 +85,7 @@ export default class App extends Component {
               <PrivateRoute path="/server/edit/:id" exact component={EditServer} />
               <PrivateRoute path="/server/:id/configure" exact component={ConfigureServer}/>
               <PrivateRoute path="/server/grid/:id" exact component={ProbeGrid}/>
+              <PrivateRoute path="/probe/:id" exact component={LectureListScreen}/>
             </Switch>
           </div>
       </Router>

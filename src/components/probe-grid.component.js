@@ -12,7 +12,6 @@ export default class ProbeGrid extends Component {
   }
 
   componentDidMount(){
-    console.log('http://localhost:4000/server/grid/'+this.props.match.params.id);
     axios.get('http://localhost:4000/server/grid/'+this.props.match.params.id,  { 
             headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}
         })
@@ -26,23 +25,10 @@ export default class ProbeGrid extends Component {
             console.log(error);
         })
   }
-
-  getHeaderOrder(lectures){
-    console.log(lectures)
-    this.state.probes.map((element, index, arr) => {
-      lectures.map((lecture, lectureIndex, lectureArray) => {
-        console.log(lecture)
-        console.log(element._id)
-      })
-    })
-    return lectures
-  }
-
   parseISOString(s) {
     var b = s.split(/\D+/);
     return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
   }
-
   BodyTable(){
 
     let lectures = []
@@ -51,17 +37,17 @@ export default class ProbeGrid extends Component {
         // Li afegeixo la columna de la taula on ha d'anar el valor.
         lectureElement.position = idElement
         let date = this.parseISOString(lectureElement.lecture_date);
-        if(lectures[date]){
-          lectures[date].push(lectureElement)
+        let dateString = date.getDate() + "/" + date.getMonth() + "/" + date.getFullYear() + " " + date.getHours() + ":" + date.getMinutes();
+        if(lectures[dateString]){
+          lectures[dateString].push(lectureElement)
         }
         else{
-          lectures[date] = [] 
-          lectures[date].push(lectureElement)
+          lectures[dateString] = [] 
+          lectures[dateString].push(lectureElement)
         }        
       })
     })
 
-    console.log(lectures)
     return Object.entries(lectures).map((element, id, arra) => {
       if(this.state.probes.length === element[1].length){
         return <ProbeRow columns={this.state.probes.length} key={id} id={element[0]} values={element[1]} />

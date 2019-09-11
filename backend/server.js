@@ -108,31 +108,19 @@ serverRoutes.route('/grid/:id').get(function(req, res){
       console.log("Can't load data for the grid.");
       res.status(500).send("Can't load data for the grid.");
     })*/
-})
-.catch(err => {
-  console.log("Can't load data for the grid.");
-  res.status(500).send("Can't load data for the grid.");
-})
-   /*Probe.find({ probe_server: req.params.id}).populate('probe_lectures').then(result => {
-    var i = 0;
-
-    
-
-    /*result.map(probe => {
-      Lecture.find({ lecture_probe: probe._id }).sort('-lecture_date').then(resLectures => {
-        result.probe_lectures = resLectures;
-        i++;
-        if(i === result.length){
-          console.log("send!!");
-          
-        }
-      })
-    })
   })
   .catch(err => {
-    console.log("Error loading probe with probe_lectures");
-  });*/
+    console.log("Can't load data for the grid.");
+    res.status(500).send("Can't load data for the grid.");
+  })
 });
+
+serverRoutes.route('/probe/:id').get(function(req, res){
+  Probe.findById(req.params.id).populate({ path:'probe_lectures', options: { sort: { lecture_date:-1 }}}).then(result => {
+    console.log(result)
+    res.status(200).send(result);
+  })
+})
 
 serverRoutes.route('/:id/add').post(function(req, res) {
   
