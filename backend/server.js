@@ -83,14 +83,17 @@ serverRoutes.route('/add').post(function(req, res) {
 });
 
 serverRoutes.route('/grid/:id').get(function(req, res){
-  let probe_names = [] 
-  Probe.find({probe_server: req.params.id}).then(result => {
-    let ids = []
-    result.map(element => {
-      probe_names.push(element.probe_name)
-      ids.push(element._id);
-    })
-    Lecture.aggregate([
+  //let probe_names = [] 
+  Probe.find({probe_server: req.params.id}).populate({ path:'probe_lectures', options: { sort: { lecture_date:-1 }}}).then(result => {
+    //console.log(result)
+    //let ids = []
+    res.status(200).send(result);
+    //result.map(element => {
+      //probe_names.push(element.probe_name)
+      //ids.push(element._id);
+      
+    //})
+    /*Lecture.aggregate([
       {$match : { lecture_probe: { $in: ids }}},
       {$group : {_id:"$lecture_date" , lectures: {$push: { lecture_name:"$lecture_probe.probe_name", lecture_value:"$lecture_value"} }}} 
     ])
@@ -104,7 +107,7 @@ serverRoutes.route('/grid/:id').get(function(req, res){
     .catch(err => {
       console.log("Can't load data for the grid.");
       res.status(500).send("Can't load data for the grid.");
-    })
+    })*/
 })
 .catch(err => {
   console.log("Can't load data for the grid.");
@@ -215,6 +218,7 @@ app.listen(PORT, function() {
  * Procés de cron per alimentar la base de dades des dels miniservers. 
  */
 new CronJob('1 * * * * *', function(){
+  let moment = new Date()
   Server.find({}).populate('server_probes')
   .then(result => {
     result.map(server => {
@@ -228,7 +232,7 @@ new CronJob('1 * * * * *', function(){
             }
             else{
               let lecture = new Lecture({
-                lecture_date: moment().tz("Europe/Madrid").format(),
+                lecture_date: moment,
                 lecture_value: lectureResult.LL.$.value,
                 lecture_probe: probe._id
               })

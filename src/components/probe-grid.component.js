@@ -7,9 +7,8 @@ export default class ProbeGrid extends Component {
   constructor(props) {
     super(props);
     this.state = {
-        lectures: [],
-        probe_names: []
-      };
+      probes: []
+    };
   }
 
   componentDidMount(){
@@ -20,8 +19,7 @@ export default class ProbeGrid extends Component {
         .then(response => {
           console.log(response.data);
           this.setState({ 
-            lectures: response.data.lectures,
-            probe_names: response.data.probe_names
+            probes : response.data
           });
         })
         .catch(function (error){
@@ -29,10 +27,45 @@ export default class ProbeGrid extends Component {
         })
   }
 
+  getHeaderOrder(lectures){
+    console.log(lectures)
+    this.state.probes.map((element, index, arr) => {
+      lectures.map((lecture, lectureIndex, lectureArray) => {
+        console.log(lecture)
+        console.log(element._id)
+      })
+    })
+    return lectures
+  }
+
+  parseISOString(s) {
+    var b = s.split(/\D+/);
+    return new Date(Date.UTC(b[0], --b[1], b[2], b[3], b[4], b[5], b[6]));
+  }
+
   BodyTable(){
-    return this.state.lectures.map((element, id, arr) => {
-      console.log(element)
-      return <ProbeRow row={element} key={id}></ProbeRow>
+
+    let lectures = []
+    this.state.probes.map((probeElement, idElement, arr) => {
+      probeElement.probe_lectures.map((lectureElement, id, arr) => {
+        // Li afegeixo la columna de la taula on ha d'anar el valor.
+        lectureElement.position = idElement
+        let date = this.parseISOString(lectureElement.lecture_date);
+        if(lectures[date]){
+          lectures[date].push(lectureElement)
+        }
+        else{
+          lectures[date] = [] 
+          lectures[date].push(lectureElement)
+        }        
+      })
+    })
+
+    console.log(lectures)
+    return Object.entries(lectures).map((element, id, arra) => {
+      if(this.state.probes.length === element[1].length){
+        return <ProbeRow columns={this.state.probes.length} key={id} id={element[0]} values={element[1]} />
+      }      
     })
   }
 
@@ -45,11 +78,11 @@ export default class ProbeGrid extends Component {
         </div>
         <table className="table table-striped" style={{ marginTop: 20 }}><thead><tr><th>Date</th>
         {
-          this.state.probe_names.map((element, id, arr) => {
-            return <th key={id}>{element}</th>
+          this.state.probes.map((element, id, arr) => {
+            return <th key={id}>{element.probe_name}</th>
           })
         }
-        </tr></thead><tbody>{ this.BodyTable() }</tbody></table>
+        </tr></thead><tbody>{  this.BodyTable()  }</tbody></table>
       </div>
     )
   }
