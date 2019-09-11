@@ -83,10 +83,11 @@ serverRoutes.route('/add').post(function(req, res) {
 });
 
 serverRoutes.route('/grid/:id').get(function(req, res){
-  
+  let probe_names = [] 
   Probe.find({probe_server: req.params.id}).then(result => {
     let ids = []
     result.map(element => {
+      probe_names.push(element.probe_name)
       ids.push(element._id);
     })
     Lecture.aggregate([
@@ -94,7 +95,11 @@ serverRoutes.route('/grid/:id').get(function(req, res){
       {$group : {_id:"$lecture_date" , lectures: {$push: { lecture_name:"$lecture_probe.probe_name", lecture_value:"$lecture_value"} }}} 
     ])
     .then(result => {
-      res.status(200).send(result);
+      let toReturn = {
+        lectures: result,
+        probe_names: probe_names
+      }
+      res.status(200).send(toReturn);
     })
     .catch(err => {
       console.log("Can't load data for the grid.");

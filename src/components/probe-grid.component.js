@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
+import ProbeRow from './probe-row.component';
 import axios from 'axios';
-
-const Lecture = props => (
-  <tr>
-      
-  </tr>
-)
 
 export default class ProbeGrid extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
-        probes: {}
+        lectures: [],
+        probe_names: []
       };
   }
 
@@ -23,22 +19,44 @@ export default class ProbeGrid extends Component {
         })
         .then(response => {
           console.log(response.data);
-            this.setState({ 
-              probes: response.data
-            });
+          this.setState({ 
+            lectures: response.data.lectures,
+            probe_names: response.data.probe_names
+          });
         })
         .catch(function (error){
             console.log(error);
         })
   }
 
-  HeaderTable(){
-    /*return this.state.probes.map(function(currentProbe, i){
-      return <th>{currentProbe.probe_name}</th>;
-    })*/
+  BodyTable(){
+    return this.state.lectures.map((element, id, arr) => {
+      console.log(element)
+      return <ProbeRow row={element} key={id}></ProbeRow>
+    })
   }
 
-  BodyTable(){
+  render() {
+    return (
+      <div>
+        <div className="title-container">
+            <h3>Servers List</h3>
+            <button type="button" className="btn btn-outline-primary" onClick={this.onNewButtonClicked}>New</button>
+        </div>
+        <table className="table table-striped" style={{ marginTop: 20 }}><thead><tr><th>Date</th>
+        {
+          this.state.probe_names.map((element, id, arr) => {
+            return <th key={id}>{element}</th>
+          })
+        }
+        </tr></thead><tbody>{ this.BodyTable() }</tbody></table>
+      </div>
+    )
+  }
+
+}
+
+
     /*
     let max = 0;
     let total_dates = [];
@@ -54,18 +72,3 @@ export default class ProbeGrid extends Component {
     })
 
 */
-  }
-
-  render() {
-    return (
-      <div>
-        <div className="title-container">
-            <h3>Servers List</h3>
-            <button type="button" className="btn btn-outline-primary" onClick={this.onNewButtonClicked}>New</button>
-        </div>
-        <table className="table table-striped" style={{ marginTop: 20 }}><thead><tr><th>Date</th>{ this.HeaderTable() }</tr></thead><tbody>{ this.BodyTable() }</tbody></table>
-      </div>
-    )
-  }
-
-}
