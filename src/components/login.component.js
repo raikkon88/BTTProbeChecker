@@ -1,4 +1,9 @@
 import React, { Component } from 'react';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import TextField from '@material-ui/core/TextField';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import axios from 'axios';
 
 export default class Index extends Component {
@@ -15,6 +20,11 @@ export default class Index extends Component {
     this.onChangeUserNameOrEmail = this.onChangeUserNameOrEmail.bind(this);
     this.onChangeUserPassword = this.onChangeUserPassword.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
+    this.useStyles = makeStyles(theme => ({
+      heading: {
+        margin: theme.spacing(2),
+      }
+    }))
   }
 
 
@@ -54,34 +64,49 @@ export default class Index extends Component {
   render() {
     const {loading, error } = this.state;
     return (
-        <div>
-            <h3>Login</h3>
-            <form onSubmit={this.onSubmit}>
-              <div className="form-group"> 
-                <label>Email: </label>
-                <input  type="email"
-                        className="form-control"
-                        value={this.state.user_nameOrEmail}
-                        onChange={this.onChangeUserNameOrEmail}
-                        required
-                        />
-              </div>
-              <div className="form-group"> 
-                <label>Password: </label>
-                <input  type="password"
-                        className="form-control"
-                        value={this.state.user_password}
-                        onChange={this.onChangeUserPassword}
-                        required
-                        />
-              </div>
-              { error &&
-                <div className={'alert alert-danger'}>{error}</div>
-              }
-              <button className="btn btn-primary" disabled={loading}>Login</button>
-            </form>
-            
-        </div>
+        <Grid container direction="row" justify="center" alignItems="center">
+            <Grid item xs={12}>
+              <Typography variant="h2" component="h2" className={ this.useStyles.heading }>
+                Login
+              </Typography>
+            </Grid>
+            <Grid item>
+              <form onSubmit={this.onSubmit}>
+                <Grid container>
+                  <TextField
+                    style={{ minWidth: "300px"}}
+                    id="email-id"
+                    label="email"
+                    type="email"
+                    value={this.state.user_nameOrEmail}
+                    onChange={this.onChangeUserNameOrEmail}
+                    required
+                    variant="outlined"
+                    margin="normal"
+                  />
+                </Grid>
+                <Grid container>
+                  <TextField
+                    style={{ minWidth: "300px"}}
+                    id="password-id"
+                    label="password"
+                    type="password"
+                    value={this.state.user_password}
+                    onChange={this.onChangeUserPassword}
+                    required
+                    variant="outlined"
+                    margin="normal"
+                  />
+                </Grid>
+                  { error &&
+                    <div className={'alert alert-danger'}>{error}</div>
+                  }
+                <Grid item>
+                  <Button type="submit" variant="contained" color="primary" disabled={loading}>Login</Button>
+                </Grid>
+              </form>
+            </Grid>
+        </Grid>
     )
   }
 }
