@@ -25,8 +25,8 @@ export default class ProbeList extends Component {
     }
 
     componentDidMount() {
-      console.log(this.props.match.params.id);
-      axios.get('http://localhost:4000/server/'+this.props.match.params.id, 
+      console.log(this.props.probeId);
+      axios.get('http://localhost:4000/server/'+this.props.probeId, 
         { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
         .then(response => {
           console.log(response.data);

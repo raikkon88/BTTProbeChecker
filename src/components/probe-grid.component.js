@@ -12,7 +12,7 @@ export default class ProbeGrid extends Component {
   }
 
   componentDidMount(){
-    axios.get('http://localhost:4000/server/grid/'+this.props.match.params.id,  { 
+    axios.get('http://localhost:4000/server/grid/'+this.props.serverId,  { 
             headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}
         })
         .then(response => {

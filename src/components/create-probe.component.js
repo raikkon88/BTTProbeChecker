@@ -8,7 +8,7 @@ export default class CreateProbe extends Component {
 
       this.state = {
         probe_name: '',
-        probe_server: this.props.match.params.id
+        probe_server: this.props.serverId
       }
       this.onChangeProbeName = this.onChangeProbeName.bind(this);
       this.onSubmit = this.onSubmit.bind(this);

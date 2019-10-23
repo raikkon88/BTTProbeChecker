@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import axios from 'axios';
-import LectureList from './lecture-list.component'
+import LectureList from '../components/lecture-list.component'
+import Header from '../components/header.component';
+import Footer from '../components/footer.component';
+import Grid from '@material-ui/core/Grid';
 
 export default class LectureListScreen extends Component {
 
@@ -40,7 +43,11 @@ export default class LectureListScreen extends Component {
 
   render(){
     return (
-      <LectureList lectures={this.state.probe_lectures}></LectureList>
+      <Grid container>
+        <Header></Header>
+        <LectureList lectures={this.state.probe_lectures}></LectureList>
+        <Footer></Footer>
+      </Grid>
     )
   }
 }

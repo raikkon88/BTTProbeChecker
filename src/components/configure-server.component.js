@@ -25,7 +25,7 @@ export default class ConfigureServer extends Component {
   }
 
   componentDidMount() {
-    axios.get('http://localhost:4000/server/'+this.props.match.params.id, 
+    axios.get('http://localhost:4000/server/'+this.props.serverId, 
     { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
         .then(response => {
             let serverReceived = response.data;
@@ -70,7 +70,7 @@ export default class ConfigureServer extends Component {
 
   onNextButtonClicked(){
     console.log(this.state.server.server_probes);
-    axios.post('http://localhost:4000/server/update/'+this.props.match.params.id, this.state.server,
+    axios.post('http://localhost:4000/server/update/'+this.props.serverId, this.state.server,
     { headers: {"Authorization" : `Bearer ${localStorage.getItem('token')}`}})
       .then(response => {
         console.log(response);
